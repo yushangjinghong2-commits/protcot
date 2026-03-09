@@ -89,7 +89,7 @@ python protcot/scripts/evaluate_pfud_test.py ^
   --device cuda:0 ^
   --dtype bfloat16
 ```
-
+python protcot/scripts/evaluate_pfud_test.py --model-path Qwen/Qwen3-8B --dataset-path data/Protcot/PFUD_replaced_with_neighbors_filtered_top1ge20.json --output-path /home/aiscuser/jxlei/protcot/logs  --split test  --batch-size 1 --device cuda:0 --dtype bfloat16
 说明：
 
 - 这是最标准的用法

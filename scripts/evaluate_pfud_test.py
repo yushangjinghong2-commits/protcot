@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import torch
+from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 try:
@@ -32,11 +33,6 @@ def parse_args() -> argparse.Namespace:
         "--output-path",
         required=True,
         help="Where to save prediction results as JSONL.",
-    )
-    parser.add_argument(
-        "--metrics-path",
-        default=None,
-        help="Optional path to save summary metrics as JSON.",
     )
     parser.add_argument(
         "--split",
@@ -66,7 +62,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--max-new-tokens",
         type=int,
-        default=256,
+        default=5120,
         help="Max new tokens per generation.",
     )
     parser.add_argument(
@@ -101,11 +97,6 @@ def parse_args() -> argparse.Namespace:
         "--disable-chat-template",
         action="store_true",
         help="If set, build a plain prompt instead of using tokenizer chat template.",
-    )
-    parser.add_argument(
-        "--verbose",
-        action="store_true",
-        help="Print a short log line for each sample.",
     )
     return parser.parse_args()
 
@@ -236,6 +227,7 @@ def build_prompt(
             messages,
             tokenize=False,
             add_generation_prompt=True,
+            enable_thinking=False,
         )
     except Exception:
         return f"User: {user_text}\nAssistant:"
@@ -336,7 +328,6 @@ def main() -> None:
     args = parse_args()
     dataset_path = Path(args.dataset_path)
     output_path = Path(args.output_path)
-    metrics_path = Path(args.metrics_path) if args.metrics_path else output_path.with_suffix(".metrics.json")
     if args.batch_size < 1:
         raise ValueError("--batch-size must be >= 1")
 
@@ -355,7 +346,8 @@ def main() -> None:
     results: List[Dict[str, Any]] = []
 
     with output_path.open("w", encoding="utf-8") as fout:
-        for batch_start in range(0, len(samples), args.batch_size):
+        batch_iter = range(0, len(samples), args.batch_size)
+        for batch_start in tqdm(batch_iter, desc="Evaluating", unit="batch"):
             batch_samples = samples[batch_start:batch_start + args.batch_size]
             prompts = [
                 build_prompt(
@@ -395,13 +387,6 @@ def main() -> None:
                 results.append(row)
                 fout.write(json.dumps(row, ensure_ascii=False) + "\n")
 
-                if args.verbose:
-                    print(
-                        f"[{idx}/{len(samples)}] accesion={row['accesion']} "
-                        f"token_f1={row['metrics']['token_f1']:.4f} "
-                        f"gen_tokens={generated_tokens}"
-                    )
-
     summary = {
         "model_path": args.model_path,
         "lora_path": args.lora_path,
@@ -414,9 +399,6 @@ def main() -> None:
         "top_p": args.top_p,
         "metrics": summarize_metrics(results),
     }
-
-    with metrics_path.open("w", encoding="utf-8") as f:
-        json.dump(summary, f, ensure_ascii=False, indent=2)
 
     print(json.dumps(summary, ensure_ascii=False, indent=2))
 

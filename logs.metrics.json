@@ -1,0 +1,18 @@
+{
+  "model_path": "Qwen/Qwen3-8B",
+  "lora_path": null,
+  "dataset_path": "data/Protcot/PFUD_replaced_with_neighbors_filtered_top1ge20.json",
+  "split": "test",
+  "max_samples": 1,
+  "batch_size": 1,
+  "max_new_tokens": 256,
+  "temperature": 0.0,
+  "top_p": 1.0,
+  "metrics": {
+    "num_samples": 1,
+    "exact_match": 0.0,
+    "token_f1": 0.21052631578947364,
+    "char_overlap_ratio": 0.9929078014184397,
+    "avg_generated_tokens": 256.0
+  }
+}
