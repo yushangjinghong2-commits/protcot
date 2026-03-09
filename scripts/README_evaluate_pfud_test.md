@@ -1,4 +1,5 @@
 # `evaluate_pfud_test.py` 使用说明
+python protcot/scripts/evaluate_pfud.py --model-path  Qwen/Qwen3-8B  --lora-path /home/aiscuser/jxlei/LlamaFactory/saves/qwen3-8b/lora/sft/checkpoint-10000  --dataset-path /home/aiscuser/jxlei/LlamaFactory/data/PFUD_replaced_no_structure.json --output-path /home/aiscuser/jxlei/protcot/predictions/qwen-ft-nostructure --split test --batch-size 10
 
 这个脚本用于评测本地 Hugging Face 因果语言模型在 `PFUD_replaced_with_neighbors_filtered_top1ge20.json` 测试集上的表现。
 

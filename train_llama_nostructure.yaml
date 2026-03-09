@@ -1,0 +1,47 @@
+### model
+model_name_or_path: /home/aiscuser/jxlei/models/Meta-Llama-3.1-8B-Instruct
+trust_remote_code: true
+
+### method
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_rank: 16  # 从 8 提升到 16，提高表达能力
+lora_target: all
+lora_alpha: 32  # 添加 alpha 参数，通常是 rank 的 2 倍
+
+### dataset
+dataset: PFUD_replaced_no_structure
+template: llama3
+cutoff_len: 1024
+max_samples: 400000
+preprocessing_num_workers: 16
+dataloader_num_workers: 4
+
+### output
+output_dir: saves/Llama/lora/sft
+logging_steps: 10
+save_steps: 1000
+plot_loss: true
+overwrite_output_dir: true
+save_only_model: false
+report_to: tensorboard  # choices: [none, wandb, tensorboard, swanlab, mlflow]
+
+resume_from_checkpoint: true
+### train
+per_device_train_batch_size: 4
+gradient_accumulation_steps: 8
+learning_rate: 1.0e-4
+num_train_epochs: 3.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true
+ddp_timeout: 180000000
+
+
+### eval
+# eval_dataset: alpaca_en_demo
+# val_size: 0.1
+# per_device_eval_batch_size: 1
+# eval_strategy: steps
+# eval_steps: 500

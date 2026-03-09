@@ -10,10 +10,7 @@ from transformers import AutoTokenizer
 import evaluate
 import torch
 
-# Set environment variables for offline mode/mirrors if needed (copied from notebook)
-os.environ["HF_HOME"] = "/remote-home/jxlei/.cache/huggingface"
-os.environ["TRANSFORMERS_CACHE"] = "/remote-home/jxlei/.cache/huggingface"
-os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
+
 
 def extract_prediction_from_json(text):
     """Extract description from JSON-formatted function_predict field."""
@@ -69,15 +66,17 @@ def main():
 
     # Check if file is JSONL or JSON format
     with open(input_file, 'r', encoding='utf-8') as f:
-        # Try to detect format by file extension
-        if input_file.endswith('.jsonl'):
-            # JSONL format: one JSON object per line
-            print("Detected JSONL format...")
+        # Try JSONL format first (one JSON object per line)
+        try:
+            print("Attempting JSONL format...")
             data = [json.loads(line) for line in f if line.strip()]
-        else:
-            # Regular JSON format
-            print("Detected JSON format...")
+            print(f"Successfully loaded {len(data)} entries as JSONL")
+        except json.JSONDecodeError:
+            # If JSONL fails, try regular JSON format
+            print("JSONL failed, attempting JSON format...")
+            f.seek(0)
             data = json.load(f)
+            print(f"Successfully loaded {len(data)} entries as JSON")
 
     if not data:
         print("Error: No data loaded from file.")
@@ -145,8 +144,9 @@ def main():
     print(f"Loaded {len(ground_truths)} records (skipped {skipped_count} due to length > 511).")
 
     # Generate output filename based on input filename
+    input_dir = os.path.dirname(input_file)
     input_basename = os.path.splitext(os.path.basename(input_file))[0]
-    output_file = f"/remote-home/jxlei/protcot/f1_result_{input_basename}.txt"
+    output_file = os.path.join(input_dir, f"f1_result_{input_basename}.txt")
     print(f"Results will be saved to: {output_file}")
 
     with open(output_file, "w") as out_f:
@@ -204,12 +204,12 @@ def main():
         device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"Using device: {device}")
 
-        model_path = "/remote-home/jxlei/models/biobert-large-cased-v1.1"
+        model_path = "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"
 
         try:
             scorer = BERTScorer(
                 model_type=model_path,
-                num_layers=24,
+                num_layers=12,
                 rescale_with_baseline=False,
                 device=device
             )

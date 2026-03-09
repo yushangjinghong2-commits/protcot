@@ -1,5 +1,5 @@
 # calculate_value.py 使用说明
-
+python /home/aiscuser/jxlei/protcot/scripts/calculate_value.py /home/aiscuser/jxlei/protcot/qwen/logs
 ## 📋 功能概述
 
 `calculate_value.py` 是一个用于评估蛋白质功能预测模型性能的脚本，支持计算以下指标：
