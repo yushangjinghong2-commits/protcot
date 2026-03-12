@@ -4,15 +4,20 @@
 # 单 GPU 训练
 source /home/aiscuser/jxlei/LlamaFactory/.venv/bin/activate
 cd /home/aiscuser/jxlei/LlamaFactory
-llamafactory-cli train /home/aiscuser/jxlei/protcot/train.yaml
+llamafactory-cli train /home/aiscuser/jxlei/protcot/train_llama_nostructure.yaml
 
 # 推理 ：`evaluate_pfud_test.py` 使用说明
 source /home/aiscuser/jxlei/.venv/bin/activate
-python /home/aiscuser/jxlei/protcot/scripts/evaluate_pfud.py --model-path  Qwen/Qwen3-8B  --lora-path /home/aiscuser/jxlei/LlamaFactory/saves/qwen3-8b/lora/sft/checkpoint-10000  --dataset-path /home/aiscuser/jxlei/LlamaFactory/data/PFUD_replaced_no_structure.json --output-path /home/aiscuser/jxlei/protcot/predictions/qwen-ft-nostructure --split test --batch-size 10
+python /home/aiscuser/jxlei/protcot/scripts/evaluate_pfud.py --model-path  Qwen/Qwen3-8B  --lora-path /home/aiscuser/jxlei/LlamaFactory/saves/qwen3-8b/lora/sft/checkpoint-10000  --dataset-path /home/aiscuser/jxlei/LlamaFactory/data/PFUD_replaced_no_structure.json --output-path /home/aiscuser/jxlei/protcot/predictions/qwen-ft-nostructure --split test --batch-size 1000
 
 # 计算评价指标  calculate_value.py 使用说明
 source /home/aiscuser/jxlei/.venv/bin/activate
 python /home/aiscuser/jxlei/protcot/scripts/calculate_value.py /home/aiscuser/jxlei/protcot/qwen/logs
+
+
+#  run_evaluation_pipeline.sh 脚本
+
+bash /home/aiscuser/jxlei/protcot/scripts/run_evaluation_pipeline.sh --model-path Qwen/Qwen3-8B --lora-path /home/aiscuser/jxlei/LlamaFactory/saves/qwen3-8b/lora/sft/checkpoint-10000 --dataset-path /home/aiscuser/jxlei/Protcot/aa/PFUD_replaced_with_aa_neighbors.json --output-dir /home/aiscuser/jxlei/protcot/results/qwen3-lora --batch-size 1000
 
 
 ### 项目结构

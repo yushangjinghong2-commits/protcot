@@ -1,0 +1,15 @@
+Evaluation results for: /home/aiscuser/jxlei/protcot/results/qwen-RAG2/predictions.jsonl
+Ground truth field: reference
+Prediction field: prediction
+Total records: 655
+Skipped records: 5000
+============================================================
+
+Computing BLEU and ROUGE...
+BLEU: 0.0210
+ROUGE-1: 0.1991
+ROUGE-2: 0.0899
+ROUGE-L: 0.1659
+
+Computing BERTScore F1...
+BERTScore F1 (mean): 0.8804

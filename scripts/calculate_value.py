@@ -40,6 +40,7 @@ def detect_field_names(entry):
     3. label + function_predict (RAG_test.jsonl)
     4. function + predicted_function
     5. reference + prediction (evaluate_pfud_test_vllm.py output)
+    6. true_function + predicted_function (evaluation_dataset.json)
     """
     # Check for different field combinations
     if 'ground_truth' in entry and 'predicted_function' in entry:
@@ -52,6 +53,8 @@ def detect_field_names(entry):
         return 'function', 'predicted_function'
     elif 'reference' in entry and 'prediction' in entry:
         return 'reference', 'prediction'
+    elif 'true_function' in entry and 'predicted_function' in entry:
+        return 'true_function', 'predicted_function'
     else:
         return None, None
 

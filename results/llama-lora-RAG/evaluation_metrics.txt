@@ -1,0 +1,15 @@
+Evaluation results for: /home/aiscuser/jxlei/protcot/results/llama-lora-RAG/predictions.jsonl
+Ground truth field: reference
+Prediction field: prediction
+Total records: 4365
+Skipped records: 10
+============================================================
+
+Computing BLEU and ROUGE...
+BLEU: 0.3761
+ROUGE-1: 0.6024
+ROUGE-2: 0.4151
+ROUGE-L: 0.5495
+
+Computing BERTScore F1...
+BERTScore F1 (mean): 0.9409

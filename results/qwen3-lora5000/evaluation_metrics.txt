@@ -1,0 +1,15 @@
+Evaluation results for: /home/aiscuser/jxlei/protcot/results/qwen3-lora5000/predictions.jsonl
+Ground truth field: reference
+Prediction field: prediction
+Total records: 3216
+Skipped records: 2439
+============================================================
+
+Computing BLEU and ROUGE...
+BLEU: 0.0195
+ROUGE-1: 0.2459
+ROUGE-2: 0.1059
+ROUGE-L: 0.1955
+
+Computing BERTScore F1...
+BERTScore F1 (mean): 0.8839
