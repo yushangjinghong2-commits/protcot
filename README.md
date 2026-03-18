@@ -4,7 +4,7 @@
 # 单 GPU 训练
 source /home/aiscuser/jxlei/LlamaFactory/.venv/bin/activate
 cd /home/aiscuser/jxlei/LlamaFactory
-llamafactory-cli train /home/aiscuser/jxlei/protcot/train_llama_nostructure.yaml
+llamafactory-cli train /home/aiscuser/jxlei/protcot/train_llama_RAG_withstructure.yaml
 
 # 推理 ：`evaluate_pfud_test.py` 使用说明
 source /home/aiscuser/jxlei/.venv/bin/activate
