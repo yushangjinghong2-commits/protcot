@@ -7,6 +7,8 @@ from datasets import load_dataset
 from unsloth import FastLanguageModel
 from trl import SFTTrainer, SFTConfig
 from unsloth import is_bfloat16_supported
+from unsloth.chat_templates import train_on_responses_only
+import wandb
 
 # ============ 配置参数 ============
 MODEL_NAME = "/home/aiscuser/jxlei/models/Meta-Llama-3.1-8B-Instruct"
@@ -24,11 +26,24 @@ BATCH_SIZE = 16
 GRADIENT_ACCUMULATION_STEPS = 2
 NUM_EPOCHS = 3
 LEARNING_RATE = 1e-4
-WARMUP_STEPS = 1000
+WARMUP_RATIO = 0.1
+
+# wandb参数
+WANDB_PROJECT = "llama-ragft"
+WANDB_RUN_NAME = "llama-ragft-with-structure"
+WANDB_RUN_ID = None  # 填入run id可恢复已有run，None则新建
 
 print("=" * 70)
 print("开始训练配置")
 print("=" * 70)
+
+# ============ 初始化 wandb ============
+wandb.init(
+    project=WANDB_PROJECT,
+    name=WANDB_RUN_NAME,
+    id=WANDB_RUN_ID,
+    resume="allow",  # 有id时恢复，无id时新建
+)
 
 # ============ 加载数据集 ============
 print(f"\n加载数据集: {DATASET_PATH}")
@@ -41,7 +56,7 @@ model, tokenizer = FastLanguageModel.from_pretrained(
     model_name=MODEL_NAME,
     max_seq_length=MAX_SEQ_LENGTH,
     dtype=None,
-    load_in_4bit=True,
+    load_in_4bit=False,
 )
 print("模型加载完成")
 
@@ -60,26 +75,18 @@ model = FastLanguageModel.get_peft_model(
 )
 
 # ============ 数据格式化 ============
-alpaca_prompt = """Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
-
-### Instruction:
-{}
-
-### Input:
-{}
-
-### Response:
-{}"""
-
-EOS_TOKEN = tokenizer.eos_token
-
 def formatting_prompts_func(examples):
     instructions = examples['instruction']
     inputs = examples['input']
     outputs = examples['output']
     texts = []
     for instruction, input_text, output in zip(instructions, inputs, outputs):
-        text = alpaca_prompt.format(instruction, input_text, output) + EOS_TOKEN
+        user_content = instruction + "\n" + input_text if input_text else instruction
+        messages = [
+            {"role": "user", "content": user_content},
+            {"role": "assistant", "content": output},
+        ]
+        text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
         texts.append(text)
     return {'text': texts}
 
@@ -104,7 +111,7 @@ trainer = SFTTrainer(
     args=SFTConfig(
         per_device_train_batch_size=BATCH_SIZE,
         gradient_accumulation_steps=GRADIENT_ACCUMULATION_STEPS,
-        warmup_steps=WARMUP_STEPS,
+        warmup_ratio=WARMUP_RATIO,
         num_train_epochs=NUM_EPOCHS,
         learning_rate=LEARNING_RATE,
         fp16=not is_bfloat16_supported(),
@@ -116,10 +123,16 @@ trainer = SFTTrainer(
         seed=3407,
         output_dir=OUTPUT_DIR,
         report_to='wandb',
-        run_name='llama-ragft-with-structure',
+        run_name=WANDB_RUN_NAME,
         save_strategy='steps',
         save_steps=5000
     ),
+)
+
+trainer = train_on_responses_only(
+    trainer,
+    instruction_part="<|start_header_id|>user<|end_header_id|>\n\n",
+    response_part="<|start_header_id|>assistant<|end_header_id|>\n\n",
 )
 
 # ============ 开始训练 ============

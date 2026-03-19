@@ -1,2 +1,4 @@
 # Ignore predictions directory
 predictions/
+saves/
+results/

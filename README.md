@@ -14,10 +14,10 @@ python /home/aiscuser/jxlei/protcot/scripts/evaluate_pfud.py --model-path  Qwen/
 source /home/aiscuser/jxlei/.venv/bin/activate
 python /home/aiscuser/jxlei/protcot/scripts/calculate_value.py /home/aiscuser/jxlei/protcot/qwen/logs
 
-
+/home/aiscuser/jxlei/models/Meta-Llama-3.1-8B-Instruct
 #  run_evaluation_pipeline.sh 脚本
 
-bash /home/aiscuser/jxlei/protcot/scripts/run_evaluation_pipeline.sh --model-path Qwen/Qwen3-8B --lora-path /home/aiscuser/jxlei/LlamaFactory/saves/qwen3-8b/lora/sft/checkpoint-10000 --dataset-path /home/aiscuser/jxlei/Protcot/aa/PFUD_replaced_with_aa_neighbors.json --output-dir /home/aiscuser/jxlei/protcot/results/qwen3-lora --batch-size 1000
+bash /home/aiscuser/jxlei/protcot/scripts/run_evaluation_pipeline.sh --model-path /home/aiscuser/jxlei/models/Meta-Llama-3.1-8B-Instruct --lora-path /home/aiscuser/jxlei/protcot/saves/Llama-RAGft-nostructure-unsloth/checkpoint-25000 --dataset-path /home/aiscuser/jxlei/Protcot/aa+di/PFUD_replaced_with_neighbors_filtered_top1ge20_fixed_no_structure.json --output-dir /home/aiscuser/jxlei/protcot/results/llama3-lora-ragft-nostructure --batch-size 1000
 
 
 ### 项目结构
